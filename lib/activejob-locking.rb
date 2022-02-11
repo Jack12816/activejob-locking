@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+require 'active_job'
+require 'active_support/concern'
+
 require 'activejob/locking/adapters/base'
 require 'activejob/locking/adapters/memory'
 

@@ -1,10 +1,6 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
-gem 'activejob', :require => 'active_job'
-
-group :test do
-  gem 'minitest'
-  gem 'redis-semaphore'
-  gem 'redlock'
-  gem 'suo'
-end
+# Specify your gem's dependencies in grape-jwt-authentication.gemspec
+gemspec

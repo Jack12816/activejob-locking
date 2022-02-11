@@ -1,15 +1,10 @@
-class FailJob < ActiveJob::Base
+# frozen_string_literal: true
+
+class FailJob < BaseJob
   include ActiveJob::Locking::Unique
 
-  self.lock_acquire_time = 2
-
-  # We want the job ids to be all the same for testing
-  def lock_key(index, sleep_time)
-    self.class.name
-  end
-
-  # Pass in index so we can distinguish different jobs
-  def perform(index, sleep_time)
+  # Pass in an identifier so we can distinguish different jobs
+  def perform(id, sleep_time: 5)
     raise(ArgumentError, 'Job failed')
   end
 end

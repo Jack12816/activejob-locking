@@ -12,12 +12,14 @@ module ActiveJob
         end
 
         rescue_from(Exception) do |exception|
-          self.adapter.unlock
+          adapter = self.adapter
+          adapter.unlock if adapter.lock_token
           raise
         end
 
         after_perform do |job|
-          job.adapter.unlock
+          adapter = job.adapter
+          adapter.unlock if adapter.lock_token
         end
       end
     end

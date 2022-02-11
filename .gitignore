@@ -7,3 +7,7 @@ coverage/
 .bundle/
 .idea
 pkg
+vendor/bundle
+gemfiles/vendor
+gemfiles/*.lock
+test/support/sidekiq.pid

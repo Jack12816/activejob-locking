@@ -1,3 +1,8 @@
+## next
+
+- Moved from Travis CI to Github Actions with a full build matrix (Hermann Mayer)
+- Fixed broken `ActiveJob::Base.perform_now` on non-in-memory adapters
+
 ## 0.6.1 (2020-04-01)
 
 - Support Rails exception discarding when deserializing (Mattias Pfeiffer)

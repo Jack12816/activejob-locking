@@ -1,7 +1,7 @@
 ActiveJob Locking
 ===================
 
-[![Build Status](https://secure.travis-ci.org/lantins/activejob-locking.png?branch=master)](http://travis-ci.org/cfis/activejob-locking)
+[![Continuous Integration](https://github.com/cfis/activejob-locking/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/cfis/activejob-locking/actions/workflows/test.yml)
 [![Gem Version](https://badge.fury.io/rb/activejob-locking.png)](http://badge.fury.io/rb/activejob-locking)
 
 activejob-locking lets you control how ActiveJobs are enqueued and performed:
@@ -12,9 +12,9 @@ activejob-locking lets you control how ActiveJobs are enqueued and performed:
 There are many other similar gems including [resque-lock-timeout](https://github.com/lantins/resque-lock-timeout),
 [activejob-traffic-control](https://github.com/nickelser/activejob-traffic_control), [activejob-lock](https://github.com/idolweb/activejob-lock),
 [activejob-locks](https://github.com/erickrause/activejob-locks).  What is different about this gem is that it
-is agnostic on the locking mechanism.  In the same way that ActiveJob works with many apapters, ActiveJob Locking 
+is agnostic on the locking mechanism.  In the same way that ActiveJob works with many apapters, ActiveJob Locking
 works with a variety of locking gems.
- 
+
 Installation
 ------------
 
@@ -26,8 +26,8 @@ gem 'activejob-locking'
 
 Unique Jobs
 ------------
-Sometime you only want to enqueue one instance of a job.  No other similar job should be enqueued until the first one 
-is completed. 
+Sometime you only want to enqueue one instance of a job.  No other similar job should be enqueued until the first one
+is completed.
 
 ```ruby
 class UniqueJob < ActiveJob::Base
@@ -37,7 +37,7 @@ class UniqueJob < ActiveJob::Base
   def lock_key(object)
     self.class.name
   end
- 
+
   def perform(object)
     # do some work
   end
@@ -50,8 +50,8 @@ never be enqueued or it will wait to the first job is performed.  That is contro
 
 Serialized Jobs
 ------------
-Sometime you only want to perform one instance of a job at a time.  No other similar job should be performed until the first one 
-is completed. 
+Sometime you only want to perform one instance of a job at a time.  No other similar job should be performed until the first one
+is completed.
 
 ```ruby
 class SerializedJob < ActiveJob::Base
@@ -68,7 +68,7 @@ class SerializedJob < ActiveJob::Base
 end
 ```
 Only one instance of this job will ever be performed.  If an additional job is enqueued, it will wait in its que until
-to the first job is performed. 
+to the first job is performed.
 
 Locking
 ------------
@@ -77,11 +77,11 @@ system such as [Redis](https://redis.io/) or [Memcached](https://memcached.org/)
 multiple servers to coordinate the enqueueing and performing of jobs.
 
 The ActiveJob Locking gem does not include a locking implementation. Instead it provides adapters for
-distributed locking gems. 
+distributed locking gems.
 
 Currently three gems are supported:
 
-* [redis-semaphore](https://github.com/dv/redis-semaphore) 
+* [redis-semaphore](https://github.com/dv/redis-semaphore)
 
 * [suo](https://github.com/nickelser/suo)
 
@@ -104,30 +104,30 @@ By default the key is defined as:
 ```ruby
  def lock_key(*args)
    [self.class.name, serialize_arguments(self.arguments)].join('/')
- end 
+ end
 ```
 Thus it has the format `<job class name>/<serialized_job_arguments>`
 
 The args passed to the lock key method are the same that are passed to the job's perform method.
 
 To use this gem, you will want to override this method per job.
-  
+
 ### Examples
 
-Allow only one job per queue to be enqueued or performed: 
-  
+Allow only one job per queue to be enqueued or performed:
+
 ```ruby
  def lock_key(*args)
    self.queue
- end 
+ end
 ```
 
-Allow only one instance of a job class to be enqueued of performed:  
-  
+Allow only one instance of a job class to be enqueued of performed:
+
 ```ruby
  def lock_key(*args)
    self.class.name
- end 
+ end
 ```
 
 Options
@@ -142,7 +142,7 @@ This should be updated using a Rails initializer.  Each job class can override i
 
 ### Adapter
 
-Use the adapter option to specify which locking gem to use.  
+Use the adapter option to specify which locking gem to use.
 
 Globally update:
 
@@ -162,7 +162,7 @@ end
 ### Hosts
 
 An array of hosts for the distributed system. This format is dependent on the locking gem, but generally is a url or an existing Memcache or Redis
-connection. Please refer to the appropriate locking gem's documentation documentation.  
+connection. Please refer to the appropriate locking gem's documentation documentation.
 
 Globally update:
 
@@ -203,9 +203,9 @@ end
 ```
 
 You almost surely want the lock_time to be greater than the time it takes to execute the job.  Otherwise, the lock will expire
-and extra jobs will start to run. When the job finishes, or fails, the lock will be released.  However, remember that the job 
+and extra jobs will start to run. When the job finishes, or fails, the lock will be released.  However, remember that the job
 could be terminated by the operating system or a monitoring system (such as monit). In that case, the lock won't be released
-and will remain in force until its lock_time expires. 
+and will remain in force until its lock_time expires.
 
 ### lock_acquire_time
 
@@ -228,7 +228,7 @@ end
 ```
 
 Remember that most locking gems block the current thread when trying to acquire a lock. Therefore you likely want
-lock_acquire_time to be low.  However, the lower it is the more likely that unique jobs that are enqueued will 
+lock_acquire_time to be low.  However, the lower it is the more likely that unique jobs that are enqueued will
 expire and be dropped.
 
 ### enqueue_time
@@ -255,7 +255,7 @@ end
 
 ### AdapterOptions
 
-This is a hash table of options that should be sent to the lock gem when it is instantiated. Read the lock 
+This is a hash table of options that should be sent to the lock gem when it is instantiated. Read the lock
 gems documentation to find appropriate values.
 
 Globally update:
