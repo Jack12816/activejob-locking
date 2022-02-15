@@ -11,7 +11,7 @@ class BaseJob < ActiveJob::Base
   # def lock_key(id, sleep_time = 5)
   def lock_key(*args)
     # pp "#{self.class.name}:#{id}:#{sleep_time}"
-    "#{self.class.name}:#{args}"
+    pp "#{self.class.name}:#{args}"
   end
 
   # Pass in an identifier so we can distinguish different jobs
