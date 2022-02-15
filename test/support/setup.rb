@@ -4,17 +4,19 @@ require 'bundler'
 Bundler.require(:default, :test)
 require 'active_support/core_ext/string'
 
-# To make debugging easier, test within this source tree versus an installed gem
-$LOAD_PATH.unshift(File.expand_path('../../../lib', __FILE__))
-require 'activejob-locking'
-
-require 'activejob/locking/adapters/memory'
-require 'activejob/locking/adapters/redis-semaphore'
-require 'activejob/locking/adapters/redlock'
-require 'activejob/locking/adapters/suo-redis'
-
-require_relative 'redis'
 require_relative 'helpers'
+require_relative 'redis'
+
+# Some external gems print some deprecation warninigs, ignore them
+suppress_output do
+  $LOAD_PATH.unshift(File.expand_path('../../../lib', __FILE__))
+  require 'activejob-locking'
+
+  require 'activejob/locking/adapters/memory'
+  require 'activejob/locking/adapters/redis-semaphore'
+  require 'activejob/locking/adapters/redlock'
+  require 'activejob/locking/adapters/suo-redis'
+end
 
 [
   Dir[File.join(__dir__, '../activejob-locking/*_test*.rb')],

@@ -3,8 +3,6 @@
 class BaseJob < ActiveJob::Base
   include ActiveJob::Locking::Base
 
-  self.lock_acquire_time = 1
-
   before_perform do |job|
     track_perform(job.arguments.first)
   end

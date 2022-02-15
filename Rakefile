@@ -16,7 +16,7 @@ Gem::PackageTask.new(spec).define
 
 desc 'Run unit tests.'
 Rake::TestTask.new(:test) do |task|
-  # task.test_files = FileList['test/test_*.rb']
+  # task.test_files = FileList['test/**/test_*.rb']
   task.test_files = pp FileList['test/**/test_*.rb']
   task.verbose = true
 end

@@ -5,7 +5,6 @@ require 'active_job'
 require 'sidekiq'
 
 Sidekiq.logger = logger
-ActiveJob::Base.queue_adapter = :sidekiq
 
 Redis.exists_returns_integer = false \
   if Redis.respond_to? :exists_returns_integer
@@ -47,7 +46,7 @@ Sidekiq.configure_client do |config|
   end
 end
 
-Sidekiq.default_worker_options = { retry: 0, backtrace: false }
+Sidekiq.default_worker_options = { retry: false, backtrace: false }
 
 # Disable the Sidekiq banner (ASCII art) to unpollute the testing log.
 if Sidekiq.server?
@@ -60,6 +59,12 @@ end
 
 def configure_adapter(adapter)
   adapter = adapter.to_s
+
+  ActiveJob::Base.queue_adapter = :sidekiq
+
+  if adapter == 'memory'
+    ActiveJob::Base.queue_adapter = :test
+  end
 
   if adapter == 'redlock'
     ActiveJob::Locking.options.hosts = Redlock::Client::DEFAULT_REDIS_URLS
