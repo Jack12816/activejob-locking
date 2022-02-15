@@ -6,7 +6,7 @@ require 'minitest/hooks/test'
 class BaseTest < MiniTest::Test
   include Minitest::Hooks
 
-  cattr_accessor :adapter
+  class_attribute :adapter, default: :memory
 
   def around_all
     pid = start_sidekiq(adapter)

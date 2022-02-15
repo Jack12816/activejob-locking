@@ -58,19 +58,19 @@ if Sidekiq.server?
 end
 
 def configure_adapter(adapter)
-  adapter = adapter.to_s
-
+  adapter = adapter.to_sym
   ActiveJob::Base.queue_adapter = :sidekiq
 
-  if adapter == 'memory'
+  case adapter
+  when :memory
     ActiveJob::Base.queue_adapter = :test
-  end
-
-  if adapter == 'redlock'
+  when :redlock
     ActiveJob::Locking.options.hosts = Redlock::Client::DEFAULT_REDIS_URLS
+  when :redis_semaphore
+    ActiveJob::Locking.options.hosts = []
   end
 
-  adapter = "ActiveJob::Locking::Adapters::#{adapter.camelize}".constantize
+  adapter = "ActiveJob::Locking::Adapters::#{adapter.to_s.camelize}".constantize
   logger.debug "Loaded activejob-locking adapter: #{adapter}"
   ActiveJob::Locking.options.adapter = adapter
 end
