@@ -46,6 +46,11 @@ module ActiveJob
 
             # Remember the lock might be acquired in one process and released in another
             merged_options.adapter.new(key, merged_options)
+                       rescue => e
+                         pp self.arguments
+                         pp e
+                         raise e
+
           end
           @adapter
         end
