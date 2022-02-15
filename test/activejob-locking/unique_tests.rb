@@ -6,7 +6,7 @@ module UniqueTests
 
     assert_equal(1, enqueued_jobs.count)
     assert_equal(1, performed_jobs.count)
-    assert(duration >= UniqueJob.lock_acquire_time.seconds * 2)
+    assert(duration >= UniqueJob.lock_acquire_time.seconds * 2, duration)
   end
 
   def test_in_parallel_only_first_is_performed
@@ -14,7 +14,7 @@ module UniqueTests
 
     assert_equal(1, enqueued_jobs.count)
     assert_equal(1, performed_jobs.count)
-    assert(duration >= UniqueJob.lock_acquire_time.seconds)
+    assert(duration >= UniqueJob.lock_acquire_time.seconds, duration)
   end
 
   def test_in_concurrent_only_first_is_performed
@@ -22,7 +22,7 @@ module UniqueTests
 
     assert_equal(1, enqueued_jobs.count)
     assert_equal(1, performed_jobs.count)
-    assert(duration >= UniqueJob.lock_acquire_time.seconds)
+    assert(duration >= UniqueJob.lock_acquire_time.seconds, duration)
   end
 
   def test_in_serial_all_performed
@@ -32,7 +32,7 @@ module UniqueTests
 
     assert_equal(3, enqueued_jobs.count)
     assert_equal(3, performed_jobs.count)
-    assert(duration >= 3.seconds)
+    assert(duration >= 3.seconds, duration)
   end
 
   def test_in_parallel_all_performed
@@ -42,7 +42,7 @@ module UniqueTests
 
     assert_equal(3, enqueued_jobs.count)
     assert_equal(3, performed_jobs.count)
-    assert(duration >= 3.seconds)
+    assert(duration >= 3.seconds, duration)
   end
 
   def test_in_concurrent_all_performed
@@ -52,7 +52,7 @@ module UniqueTests
 
     assert_equal(3, enqueued_jobs.count)
     assert_equal(3, performed_jobs.count)
-    assert(duration >= 3.seconds)
+    assert(duration >= 3.seconds, duration)
   end
 
   # def test_in_serial_some_performed
@@ -62,7 +62,7 @@ module UniqueTests
   #
   #   assert_equal(3, enqueued_jobs.count)
   #   assert_equal(3, performed_jobs.count)
-  #   assert(duration >= 3.seconds)
+  #   assert(duration >= 3.seconds, duration)
   # end
   #
   # def test_in_parallel_some_performed
@@ -72,7 +72,7 @@ module UniqueTests
   #
   #   assert_equal(3, enqueued_jobs.count)
   #   assert_equal(3, performed_jobs.count)
-  #   assert(duration >= 3.seconds)
+  #   assert(duration >= 3.seconds, duration)
   # end
   #
   # def test_in_concurrent_some_performed
@@ -82,7 +82,7 @@ module UniqueTests
   #
   #   assert_equal(3, enqueued_jobs.count)
   #   assert_equal(3, performed_jobs.count)
-  #   assert(duration >= 3.seconds)
+  #   assert(duration >= 3.seconds, duration)
   # end
 
 
