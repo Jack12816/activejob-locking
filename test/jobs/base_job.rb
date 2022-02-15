@@ -8,10 +8,8 @@ class BaseJob < ActiveJob::Base
   end
 
   # We want the job ids to be all the same for testing
-  # def lock_key(id, sleep_time = 5)
   def lock_key(*args)
-    # pp "#{self.class.name}:#{id}:#{sleep_time}"
-    pp "#{self.class.name}:#{args}"
+    pp "#{self.class.name}:#{args.first}"
   end
 
   # Pass in an identifier so we can distinguish different jobs
