@@ -55,13 +55,6 @@ module UniqueTests
     assert(duration >= 3.seconds)
   end
 
-
-
-
-
-
-
-
   def test_in_serial_some_performed
     UniqueJob.lock_acquire_time = 1
 
