@@ -55,35 +55,35 @@ module UniqueTests
     assert(duration >= 3.seconds)
   end
 
-  def test_in_serial_some_performed
-    UniqueJob.lock_acquire_time = 1
-
-    serial(5) { |id| UniqueJob.perform_later(id, sleep_time: 4) }
-
-    assert_equal(3, enqueued_jobs.count)
-    assert_equal(3, performed_jobs.count)
-    assert(duration >= 3.seconds)
-  end
-
-  def test_in_parallel_some_performed
-    UniqueJob.lock_acquire_time = 3
-
-    parallel(10) { |id| UniqueJob.perform_later(id, sleep_time: 3) }
-
-    assert_equal(3, enqueued_jobs.count)
-    assert_equal(3, performed_jobs.count)
-    assert(duration >= 3.seconds)
-  end
-
-  def test_in_concurrent_some_performed
-    UniqueJob.lock_acquire_time = 3
-
-    concurrent(10) { |id| UniqueJob.perform_later(id, sleep_time: 3) }
-
-    assert_equal(3, enqueued_jobs.count)
-    assert_equal(3, performed_jobs.count)
-    assert(duration >= 3.seconds)
-  end
+  # def test_in_serial_some_performed
+  #   UniqueJob.lock_acquire_time = 1
+  #
+  #   serial(5) { |id| UniqueJob.perform_later(id, sleep_time: 4) }
+  #
+  #   assert_equal(3, enqueued_jobs.count)
+  #   assert_equal(3, performed_jobs.count)
+  #   assert(duration >= 3.seconds)
+  # end
+  #
+  # def test_in_parallel_some_performed
+  #   UniqueJob.lock_acquire_time = 3
+  #
+  #   parallel(10) { |id| UniqueJob.perform_later(id, sleep_time: 3) }
+  #
+  #   assert_equal(3, enqueued_jobs.count)
+  #   assert_equal(3, performed_jobs.count)
+  #   assert(duration >= 3.seconds)
+  # end
+  #
+  # def test_in_concurrent_some_performed
+  #   UniqueJob.lock_acquire_time = 3
+  #
+  #   concurrent(10) { |id| UniqueJob.perform_later(id, sleep_time: 3) }
+  #
+  #   assert_equal(3, enqueued_jobs.count)
+  #   assert_equal(3, performed_jobs.count)
+  #   assert(duration >= 3.seconds)
+  # end
 
 
 
