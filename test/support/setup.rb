@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+$VERBOSE = nil
+$stdout.sync = true
+
 require 'bundler'
 Bundler.require(:default, :test)
 require 'active_support/core_ext/string'
@@ -16,20 +19,28 @@ suppress_output do
   require 'activejob/locking/adapters/redis-semaphore'
   require 'activejob/locking/adapters/redlock'
   require 'activejob/locking/adapters/suo-redis'
+
+  [
+    Dir[File.join(__dir__, '../activejob-locking/*_test*.rb')],
+    Dir[File.join(__dir__, '../jobs/**/*.rb')]
+  ].flatten.sort.each { |path| require path }
 end
 
-[
-  Dir[File.join(__dir__, '../activejob-locking/*_test*.rb')],
-  Dir[File.join(__dir__, '../jobs/**/*.rb')]
-].flatten.sort.each { |path| require path }
+def test_logger
+  return @test_logger if @test_logger
 
-def logger
-  @logger ||= Logger.new(IO::NULL)
+  dev = ENV.fetch('DEBUG', 'false') == 'true' ? $stdout : IO::NULL
+  formatter = Class.new(Logger::Formatter) do
+    def call(*)
+      "#{super.gsub(' -- :', " -- :\e[33m")}\e[0m"
+    end
+  end
+  @test_logger = Logger.new(dev, formatter: formatter.new)
 end
 
-if ENV.fetch('DEBUG', 'false') == 'true'
-  @logger = Logger.new($stdout)
+def third_party_logger
+  dev = ENV.fetch('DEBUG', 'false') == 'true' ? $stdout : IO::NULL
+  Logger.new(dev)
 end
 
-$VERBOSE = nil
-ActiveJob::Base.logger = logger
+ActiveJob::Base.logger = third_party_logger

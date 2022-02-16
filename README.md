@@ -1,5 +1,5 @@
 ActiveJob Locking
-===================
+=================
 
 [![Continuous Integration](https://github.com/cfis/activejob-locking/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/cfis/activejob-locking/actions/workflows/test.yml)
 [![Gem Version](https://badge.fury.io/rb/activejob-locking.png)](http://badge.fury.io/rb/activejob-locking)

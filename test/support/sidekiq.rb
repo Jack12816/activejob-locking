@@ -4,11 +4,6 @@ require_relative 'setup'
 require 'active_job'
 require 'sidekiq'
 
-Sidekiq.logger = logger
-
-Redis.exists_returns_integer = false \
-  if Redis.respond_to? :exists_returns_integer
-
 # Unfortunately, ActiveJob's +#after_enqueue+ is not to trust with versions
 # <=6.2 (In Rails 6.2, `after_enqueue`/`after_perform` callbacks no longer run
 # if `before_enqueue`/`before_perform` respectively halts with `throw
@@ -31,52 +26,34 @@ class TrackJobEnqueuing
   # @yield the next middleware in the chain or the enqueuing of the job
   def call(worker_class, job, queue, redis_pool)
     track_enqueue(job['args'].first['arguments'].first)
+    Sidekiq.logger.debug(job)
     yield
   end
 end
 
-Sidekiq.configure_server do |config|
-  config.redis = { url: redis_url }
-end
-
-Sidekiq.configure_client do |config|
-  config.redis = { url: redis_url }
-  config.client_middleware do |chain|
-    chain.add TrackJobEnqueuing
-  end
-end
-
-Sidekiq.default_worker_options = { retry: false, backtrace: false }
-
-# Disable the Sidekiq banner (ASCII art) to unpollute the testing log.
-if Sidekiq.server?
-  class Sidekiq::CLI
-    def print_banner
-      nil
-    end
-  end
-end
-
-def configure_adapter(adapter)
+def configure_adapter(adapter, context: :unknown)
   adapter = adapter.to_sym
   ActiveJob::Base.queue_adapter = :sidekiq
 
   case adapter
   when :memory
-    ActiveJob::Base.queue_adapter = :test
+    ActiveJob::Base.queue_adapter = :async
   when :redlock
     ActiveJob::Locking.options.hosts = Redlock::Client::DEFAULT_REDIS_URLS
   when :redis_semaphore
     ActiveJob::Locking.options.hosts = []
+  when :suo_redis
+    ActiveJob::Locking.options.hosts = [redis_url]
   end
 
   adapter = "ActiveJob::Locking::Adapters::#{adapter.to_s.camelize}".constantize
-  logger.debug "Loaded activejob-locking adapter: #{adapter}"
+  context = context.to_s.humanize
+  test_logger.debug "> #{context} locking adapter: #{adapter}"
   ActiveJob::Locking.options.adapter = adapter
 end
 
 def start_sidekiq(adapter = :memory)
-  configure_adapter(adapter)
+  configure_adapter(adapter, context: :minitest)
   redis_reset
   sidekiq_pid_file = Pathname.new(File.join(__dir__, 'sidekiq.pid'))
   sidekiq_pid = suppress(Errno::ENOENT) do
@@ -99,6 +76,33 @@ def kill(pid)
   suppress(Errno::ESRCH) { Process.kill('KILL', pid) }
 end
 
-if (adapter = ENV['ADAPTER']).present?
-  configure_adapter(adapter)
+Sidekiq.logger = third_party_logger
+
+Redis.exists_returns_integer = false \
+  if Redis.respond_to? :exists_returns_integer
+
+Sidekiq.configure_server do |config|
+  config.redis = { url: redis_url }
+
+  if (adapter = ENV['ADAPTER']).present?
+    configure_adapter(adapter, context: :sidekiq)
+  end
+end
+
+Sidekiq.configure_client do |config|
+  config.redis = { url: redis_url }
+  config.client_middleware do |chain|
+    chain.add TrackJobEnqueuing
+  end
+end
+
+Sidekiq.default_worker_options = { retry: false, backtrace: false }
+
+# Disable the Sidekiq banner (ASCII art) to unpollute the testing log.
+if Sidekiq.server?
+  class Sidekiq::CLI
+    def print_banner
+      nil
+    end
+  end
 end

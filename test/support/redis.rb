@@ -11,7 +11,7 @@ def redis
 end
 
 def redis_reset
-  logger.debug '> Reset the full redis store'
+  test_logger.debug '> Reset the whole redis store'
   redis.flushall
 end
 
@@ -20,18 +20,18 @@ def redis_test_reset
     redis.keys('test:*'),
     redis.keys('activejoblocking:*')
   ].flatten.each do |key|
-    logger.debug "> Reset testing key '#{key}'"
+    test_logger.debug "> Delete tracking key '#{key}'"
     redis.del(key)
   end
 end
 
 def track_enqueue(id)
-  logger.debug "> Track '#{id}' as enqueued"
+  test_logger.debug "> Track '#{id}' as enqueued"
   redis.set("test:enqueued:#{id}:#{SecureRandom.uuid}", 1)
 end
 
 def track_perform(id)
-  logger.debug "> Track '#{id}' as performed"
+  test_logger.debug "> Track '#{id}' as performed"
   redis.set("test:performed:#{id}:#{SecureRandom.uuid}", 1)
 end
 
