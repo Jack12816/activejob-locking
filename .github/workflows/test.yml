@@ -30,4 +30,4 @@ jobs:
           rubygems: latest
 
       - name: Run the test suite
-        run: bundle exec rake test
+        run: DEBUG=true bundle exec rake test
